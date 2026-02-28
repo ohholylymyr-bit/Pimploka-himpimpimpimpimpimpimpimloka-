@@ -38,20 +38,17 @@ export default defineComponent({
         const res = await registerUser(email, pin.value);
 
         // Luo Firestore käyttäjädata
-        const        setTimeout(() => router.push("/dashboard"), 1000);
+        const userRef = doc(db, "users", res.user.uid);
+        await setDoc(userRef, { id: res.user.uid, username: username.value, type: "personal" });
+
+        message.value = "Registration successful!";
+        setTimeout(() => router.push("/dashboard"), 1000);
       } catch (err: any) {
         error.value = err.message;
       }
     };
 
-    return { username, pin, register, error, message };
+    return { username, pin, register, message, error };
   },
 });
 </script>
-
-<style scoped>
-.register-page { padding: 2rem; }
-input { display: block; margin-bottom: 1rem; }
-.message { color: green; }
-.error { color: red; }
-</style>
