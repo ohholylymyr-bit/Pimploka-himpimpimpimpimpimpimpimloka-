@@ -7,9 +7,7 @@
       <input v-model="iban" type="text" />
       <label>From Account:</label>
       <select v-model="fromAccount">
-        <option v-for="a in store.accounts" :key="a.id" :value="a.id">
-          {{ a.type }} - {{ a.iban }}
-        </option>
+        <option v-for="a in accounts" :key="a.id" :value="a.id">{{ a.type }} - {{ a.iban }}</option>
       </select>
       <label>Reference/Message:</label>
       <input v-model="reference" type="text" />
@@ -25,16 +23,42 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import store from "../store";
+import { defineComponent, ref, onMounted } from "vue";
 import HamburgerMenu from "../components/HamburgerMenu.vue";
 import PaymentButton from "../components/PaymentButton.vue";
 import FloatingConfirmationModal from "../components/FloatingConfirmationModal.vue";
+import { auth } from "../firebase/config";
+import { getUserAccounts } from "../firebase/accountService";
+import { createPayment } from "../firebase/paymentService";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   components: { HamburgerMenu, PaymentButton, FloatingConfirmationModal },
   setup() {
+    const accounts = ref<any[]>([]);
+    const fromAccount = ref("");
     const iban = ref("");
+    const reference = ref("");
+    const showConfirm = ref(false);
+    const router = useRouter();
+
+    onMounted(async () => {
+      if (!auth.currentUser) return router.push("/login");
+      accounts.value = await getUserAccounts(auth.currentUser.uid);
+    });
+
+    const confirmPayment = async () => {
+      await createPayment(fromAccount.value, iban.value, 1, reference.value); // simuloidaan amount=1
+      showConfirm.value = false;
+      alert("Payment executed!");
+    };
+
+    const submitPayment = () => showConfirm.value = true;
+
+    return { accounts, fromAccount, iban, reference, showConfirm, confirmPayment, submitPayment };
+  },
+});
+</script>    const iban = ref("");
     const fromAccount = ref("");
     const reference = ref("");
     const showConfirm = ref(false);
