@@ -68,32 +68,4 @@ export default defineComponent({
     return { newUsername, newPin, changeUsername: changeUsernameFn, changePin: changePinFn, supportMessage, sendSupport: sendSupportFn, messages };
   },
 });
-</script>    const newUsername = ref(store.user?.username || "");
-    const newPin = ref("");
-    const supportMessage = ref("");
-    const messages = ref([] as any[]);
-
-    const changeUsername = () => {
-      if (newUsername.value.length === 10) store.user!.username = newUsername.value;
-    };
-    const changePin = () => {
-      if (/^\d{6}$/.test(newPin.value)) console.log("PIN changed to", newPin.value);
-    };
-    const sendSupport = () => {
-      const msg = { id: Date.now(), content: supportMessage.value, createdAt: new Date().toLocaleString() };
-      messages.value.push(msg);
-      console.log("Support message sent to admin:", msg);
-      supportMessage.value = "";
-    };
-
-    return { newUsername, newPin, changeUsername, changePin, supportMessage, sendSupport, messages };
-  }
-});
 </script>
-
-<style scoped>
-.profile-page { padding: 2rem; }
-section { margin-bottom: 2rem; }
-input { margin-right: 0.5rem; }
-ul { list-style-type: none; padding: 0; }
-</style>
