@@ -16,25 +16,29 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
-import store from "../store";
+import { registerUser } from "../firebase/authService";
+import { db } from "../firebase/config";
+import { setDoc, doc } from "firebase/firestore";
 
 export default defineComponent({
   setup() {
     const router = useRouter();
     const username = ref("");
     const pin = ref("");
-    const error = ref("");
     const message = ref("");
+    const error = ref("");
 
     const register = async () => {
       try {
         if (!/^\d{10}$/.test(username.value)) throw new Error("Username must be 10 digits");
         if (!/^\d{6}$/.test(pin.value)) throw new Error("PIN must be 6 digits");
 
-        // Simuloidaan Firebase call
-        store.user = { id: "user" + username.value, username: username.value };
-        message.value = "Registration successful!";
-        setTimeout(() => router.push("/dashboard"), 1000);
+        // Käytetään username@henrybankki.local simuloimaan email
+        const email = `${username.value}@henrybankki.local`;
+        const res = await registerUser(email, pin.value);
+
+        // Luo Firestore käyttäjädata
+        const        setTimeout(() => router.push("/dashboard"), 1000);
       } catch (err: any) {
         error.value = err.message;
       }
